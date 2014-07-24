@@ -39,6 +39,29 @@ var server = http.createServer(function(req, res){
 				res.end('OK\n');
 			}
 			break;
+		case 'PUT':
+			var path = url.parse(req.url).pathname;
+			var i = parseInt(path.slice(1), 10);
+
+			if (isNaN(i)) {
+				res.statusCode = 400;
+				res.end('Invalid item id\n');
+			} else if (!items[i]) {				
+				res.statusCode = 404;
+				res.end('Item not found\n');
+			} else {
+				var modItem = '';
+				req.setEncoding('utf8');
+				req.on('data', function(chunk){
+					modItem += chunk;
+				});	
+				req.on('end', function(){
+					items[i] = modItem;
+					res.end('OK\n');
+				});
+			}
+			break;
+
 	}
 });
 
